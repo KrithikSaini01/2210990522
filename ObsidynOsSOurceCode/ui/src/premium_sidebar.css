@@ -1,0 +1,91 @@
+
+/* ===== PREMIUM SIDEBAR OVERRIDES ===== */
+.sidebar {
+    background: rgba(5, 8, 14, 0.98) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0 !important;
+    padding: 24px 12px !important;
+}
+
+.nav-menu {
+    gap: 4px !important;
+    padding: 0 !important;
+}
+
+.nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    margin-bottom: 2px !important;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.nav-item.active {
+    background: rgba(121, 242, 214, 0.08) !important;
+    border: 1px solid rgba(121, 242, 214, 0.15) !important;
+    color: rgba(121, 242, 214, 1) !important;
+    box-shadow: none !important;
+}
+
+.nav-item .nav-icon {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: inherit !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.nav-item:hover .nav-icon {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav-item.active .nav-icon {
+    background: rgba(121, 242, 214, 0.15) !important;
+    border-color: rgba(121, 242, 214, 0.3) !important;
+    color: rgba(121, 242, 214, 1) !important;
+    box-shadow: 0 0 10px rgba(121, 242, 214, 0.1) !important;
+}
+
+.nav-label {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* Adjust app-body to remove huge padding if present */
+.app-body {
+    padding: 0 !important;
+    gap: 0 !important;
+    background: var(--bg-dark) !important;
+}
+
+/* Ensure main content doesn't crash into the edge */
+.content-main {
+    padding: 32px 40px !important;
+    background: transparent !important;
+}

@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDYN - Secure Execution Environment</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Roger That button */
+        .btn-roger {
+            display: contents;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 1px;
+            background: rgba(95, 231, 203, 0.1);
+            border: 1px solid rgba(95, 231, 203, 0.35);
+            border-radius: 8px;
+            color: rgba(95, 231, 203, 0.85);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-right: 40px;
+        }
+
+        .btn-roger:hover {
+            background: rgba(95, 231, 203, 0.22);
+            box-shadow: 0 0 10px rgba(95, 231, 203, 0.25);
+            color: #5fe7cb;
+        }
+
+        .roger-label {
+            font-size: 11px;
+        }
+
+        /* Header right — horizontal flex row with gap */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Dashboard section needs relative positioning for canvas */
+        #dashboard-section {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Global Hexagon Background -->
+    <canvas id="dashboard-anim-canvas"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;opacity:0.25;z-index:-1;"></canvas>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen active">
+        <!-- Vibe-matched top-right clock -->
+        <div id="login-clock"
+            style="position: absolute; top: 32px; right: 48px; font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--premium-accent); letter-spacing: 2px; text-shadow: 0 0 12px rgba(95, 231, 203, 0.4); z-index: 10;">
+            --:--:--
+        </div>
+        <div class="login-wrapper">
+            <div class="login-panel">
+                <div class="brand-logo">
+                    <div class="logo-icon">🛡️</div>
+                    <h1>OBSIDYN</h1>
+                </div>
+                <p class="tagline">Secure Execution Environment</p>
+
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="master-password">Master Key</label>
+                        <input type="password" id="master-password" placeholder="Enter your master key"
+                            autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="security-mode">Security Profile</label>
+                        <div class="profile-selection-buttons">
+                            <input type="hidden" id="security-mode" value="PERSONAL">
+                            <button type="button" class="profile-btn active" data-value="PERSONAL">
+                                <span class="profile-icon">👤</span>
+                                <span class="profile-text">Personal</span>
+                            </button>
+                            <button type="button" class="profile-btn" data-value="WORK">
+                                <span class="profile-icon">💼</span>
+                                <span class="profile-text">Work</span>
+                            </button>
+                            <button type="button" class="profile-btn" data-value="PUBLIC">
+                                <span class="profile-icon">👁️</span>
+                                <span class="profile-text">Public</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="authenticate-btn" class="btn-primary">
+                        <span>Authenticate</span>
+                    </button>
+
+                    <button id="btn-visual-recovery-login" class="btn-secondary"
+                        style="margin-top: 15px; width: 100%; border-color: rgba(95, 231, 203, 0.3); color: #5fe7cb; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>👁️</span> PVS-pass Bypass
+                    </button>
+
+                    <div id="login-status" class="status-message"></div>
+                </div>
+
+                <div class="login-footer">
+                    <span class="security-indicator">🔒 End-to-End Encrypted</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
+    <div id="app-screen" class="screen">
+        <!-- Header -->
+        <header class="app-header premium-header">
+            <div class="premium-header-bg">
+                <div class="premium-glow"></div>
+            </div>
+            <div class="header-left">
+                <div class="brand-logo-small premium-brand">
+                    <div class="premium-logo-mark">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"
+                                stroke="rgba(121,242,214,0.9)" stroke-width="1.5" stroke-linejoin="round" />
+                            <circle cx="12" cy="12" r="3" fill="rgba(121,242,214,0.5)" />
+                        </svg>
+                    </div>
+                    <span class="brand-name premium-title">OBSIDYN</span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="status-bar premium-hud">
+                    <div class="status-item premium-hud-item">
+                        <span class="status-label">SYS_TIME</span>
+                        <span id="session-timer" class="status-value premium-value">00:00</span>
+                    </div>
+                    <div class="status-item premium-hud-item" title="Time remaining until automatic system lock">
+                        <span class="status-label">AUTO_LOCK</span>
+                        <div class="premium-lock-box">
+                            <span id="auto-lock-countdown" class="status-value highlight-value">--:--</span>
+                        </div>
+                    </div>
+                    <div class="status-item premium-hud-item">
+                        <span class="status-label">PROFILE</span>
+                        <span id="active-profile" class="status-value profile-badge premium-badge">PERSONAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                <div id="zoom-controls-wrapper" class="zoom-controls"
+                    style="display: none; flex-direction: row; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; background: rgba(10, 15, 25, 0.6); border: 1px solid var(--premium-border); border-radius: 6px; backdrop-filter: blur(10px);">
+                    <button id="header-zoom-out"
+                        style="background: none; border: none; color: var(--premium-text-muted); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1;"
+                        title="Zoom Out">-</button>
+                    <input type="range" id="header-zoom-slider" min="0.5" max="2.0" step="0.1" value="1.0"
+                        style="width: 60px; height: 4px; accent-color: var(--premium-accent); cursor: pointer; margin: 0 4px;">
+                    <button id="header-zoom-in"
+                        style="background: none; border: none; color: var(--premium-text-muted); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1;"
+                        title="Zoom In">+</button>
+                    <span id="header-zoom-percentage"
+                        style="font-family: var(--font-mono); font-size: 11px; color: var(--premium-accent); width: 35px; text-align: right; margin-left: 6px; font-weight: bold;">100%</span>
+                    <div style="width: 1px; height: 14px; background: var(--premium-border); margin: 0 4px;"></div>
+                    <button id="header-zoom-reset"
+                        style="background: none; border: none; color: var(--premium-text-muted); cursor: pointer; font-size: 10px; font-family: var(--font-ui); font-weight: bold; padding: 0; letter-spacing: 0.5px;"
+                        title="Reset Zoom">RST</button>
+                </div>
+                <button id="roger-that-btn" title="Roger That — Save current state"
+                    style="display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--premium-accent); color: #050816; border: none; border-radius: 6px; padding: 0 16px; height: 32px; font-family: var(--font-ui); font-size: 11px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    APPLY
+                </button>
+                <button id="layout-edit-btn" class="btn-icon premium-btn-icon" title="Toggle Layout Edit Mode">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20V10m0 0H8m4 0h4M6 4v16m12-16v16" />
+                    </svg>
+                </button>
+                <button id="lock-btn" class="btn-icon premium-btn-icon" title="Lock System">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="app-body">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-item active" data-section="dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Dashboard</span>
+                    </button>
+                    <button class="nav-item" data-section="vault">
+                        <span class="nav-icon">🔐</span>
+                        <span class="nav-label">Vault Manager</span>
+                    </button>
+                    <button class="nav-item" data-section="secure-shred">
+                        <span class="nav-icon">⚠️</span>
+                        <span class="nav-label">Secure Shred</span>
+                    </button>
+                    <button class="nav-item" data-section="steganography">
+                        <span class="nav-icon">🖼️</span>
+                        <span class="nav-label">Steganography</span>
+                    </button>
+                    <button class="nav-item" data-section="recovery">
+                        <span class="nav-icon">🛡️</span>
+                        <span class="nav-label">PVS Pass</span>
+                    </button>
+                    <button class="nav-item" data-section="pc-manager">
+                        <span class="nav-icon">💻</span>
+                        <span class="nav-label">PC Manager</span>
+                    </button>
+                    <button class="nav-item" data-section="settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">Settings</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-main">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="section-header" style="position:relative;z-index:1;">
+                        <h2>Security Dashboard</h2>
+                        <p class="section-subtitle">Real-time security status and system overview</p>
+                    </div>
+
+                    <!-- ROW 1: Core Metric Cards -->
+                    <div class="dashboard-grid">
+                        <div class="info-card">
+                            <div class="card-header">
+                                <span class="card-icon">🔐</span>
+                                <h3>Encryption</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="metric-value">AES-256-GCM</div>
+                                <div class="metric-label">Active Protocol</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="card-header">
+                                <span class="card-icon">📦</span>
+                                <h3>Protected Assets</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="metric-value" id="dashboard-vault-count">0</div>
+                                <div class="metric-label">Files Encrypted</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="card-header">
+                                <span class="card-icon">🛡️</span>
+                                <h3>Security Level</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="metric-value" id="dashboard-security-level">HIGH</div>
+                                <div class="metric-label">Current Status</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="card-header">
+                                <span class="card-icon">⏱️</span>
+                                <h3>Auto-Lock</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="metric-value" id="dashboard-autolock">10:00</div>
+                                <div class="metric-label">Time Remaining</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 2: System Vitals + Session Intelligence -->
+                    <div class="dashboard-grid" style="margin-top:14px;">
+                        <div class="info-card" style="grid-column: span 2;">
+                            <div class="card-header">
+                                <span class="card-icon">🖥️</span>
+                                <h3>System Vitals</h3>
+                            </div>
+                            <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                                <div>
+                                    <div class="metric-value" id="dash-cpu-cores" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">CPU Cores</div>
+                                </div>
+                                <div>
+                                    <div class="metric-value" id="dash-ram-total" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">Total RAM</div>
+                                </div>
+                                <div>
+                                    <div class="metric-value" id="dash-ram-free" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">Free RAM</div>
+                                </div>
+                                <div>
+                                    <div class="metric-value" id="dash-uptime" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">Uptime</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-card" style="grid-column: span 2;">
+                            <div class="card-header">
+                                <span class="card-icon">🧬</span>
+                                <h3>Session Intelligence</h3>
+                            </div>
+                            <div class="card-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                                <div>
+                                    <div class="metric-value" id="dash-session-age" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">Session Age</div>
+                                </div>
+                                <div>
+                                    <div class="metric-value" id="dash-profile-mode" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">Active Profile</div>
+                                </div>
+                                <div>
+                                    <div class="metric-value" id="dash-pvs-state" style="font-size:1.4rem;">—</div>
+                                    <div class="metric-label">PVS Status</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 3: Quick Actions + Runtime Fingerprint -->
+                    <div class="dashboard-grid" style="margin-top:14px;">
+                        <div class="info-card" style="grid-column: span 2;">
+                            <div class="card-header">
+                                <span class="card-icon">⚡</span>
+                                <h3>Quick Actions</h3>
+                            </div>
+                            <div class="card-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                                <button class="btn-secondary dash-quick-btn" id="dqa-lock"
+                                    title="Lock session immediately">Lock Now</button>
+                                <button class="btn-secondary dash-quick-btn" id="dqa-vault" title="Go to Vault">Open
+                                    Vault</button>
+                                <button class="btn-secondary dash-quick-btn" id="dqa-shred"
+                                    title="Go to Shredder">Shredder</button>
+                                <button class="btn-secondary dash-quick-btn" id="dqa-signals"
+                                    title="Go to System Signals">Signals</button>
+                                <button class="btn-secondary dash-quick-btn" id="dqa-pcmgr" title="Go to PC Manager">PC
+                                    Manager</button>
+                                <button class="btn-secondary dash-quick-btn" id="dqa-steg"
+                                    title="Go to Steganography">Pixel Veil</button>
+                            </div>
+                        </div>
+
+                        <div class="info-card" style="grid-column: span 2;">
+                            <div class="card-header">
+                                <span class="card-icon">🧾</span>
+                                <h3>Runtime Fingerprint</h3>
+                            </div>
+                            <div class="card-body"
+                                style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.78rem;color:var(--text-secondary);">
+                                <div><span style="color:var(--text-primary);">Platform</span><br><span
+                                        id="dash-platform">—</span></div>
+                                <div><span style="color:var(--text-primary);">Architecture</span><br><span
+                                        id="dash-arch">—</span></div>
+                                <div><span style="color:var(--text-primary);">Node Version</span><br><span
+                                        id="dash-node">—</span></div>
+                                <div><span style="color:var(--text-primary);">Electron</span><br><span
+                                        id="dash-electron">—</span></div>
+                                <div><span style="color:var(--text-primary);">Hostname</span><br><span
+                                        id="dash-hostname">—</span></div>
+                                <div><span style="color:var(--text-primary);">Session Start</span><br><span
+                                        id="dash-session-time">—</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 4: Activity Log -->
+                    <div class="activity-panel" style="margin-top:14px;">
+                        <h3>Recent Activity</h3>
+                        <div id="activity-log" class="activity-log">
+                            <div class="activity-empty">No recent activity</div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- Vault Manager Section -->
+                <section id="vault-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Vault Manager</h2>
+                        <p class="section-subtitle">Manage your encrypted files and folders</p>
+                    </div>
+
+                    <div class="vault-info-banner">
+                        <div class="vault-anim-container">
+                            <div class="vault-anim-ring"></div>
+                            <div class="vault-anim-core">🔒</div>
+                        </div>
+                        <div class="vault-info-content">
+                            <h3>Operations Protocol</h3>
+                            <p><strong>Encryption:</strong> AES-256-GCM. Original references are securely shredded
+                                post-sealing to prevent forensic recovery.<br>
+                                <strong>Extraction:</strong> Restores the payload precisely without leaving temporary
+                                artifacts on the host.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="vault-toolbar-upgraded"><button id="btn-lock-file"
+                            class="btn-vault-seal"><span>[+]</span> Seal File</button><button id="btn-lock-folder"
+                            class="btn-vault-seal"><span>[+]</span> Seal Folder</button></div>
+                    <div class="toolbar" style="margin-bottom: 24px;"><button id="btn-refresh-vault"
+                            class="btn-secondary"><span>[Sync]</span> Refresh</button></div>
+
+                    <div class="vault-panel">
+                        <div class="vault-header">
+                            <span>Encrypted Assets</span>
+                            <span id="vault-count-label" class="badge">0 items</span>
+                        </div>
+                        <div id="vault-list" class="vault-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">🔒</div>
+                                <p>No encrypted files yet</p>
+                                <span>Lock a file to get started</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Secure Shred Section -->
+                <section id="secure-shred-section" class="content-section">
+                    <div class="section-header">
+                        <h2>⚠️ Oblivion Shredder</h2>
+                        <p class="section-subtitle">Military-grade permanent file destruction</p>
+                    </div>
+
+                    <!-- Warning Banner -->
+                    <div class="shred-warning-banner">
+                        <div class="warning-icon-pulse">
+                            <span class="warning-triangle">⚠️</span>
+                        </div>
+                        <div class="warning-content">
+                            <h3>IRREVERSIBLE DESTRUCTION</h3>
+                            <p>Files shredded with this tool cannot be recovered by any means. This includes forensic
+                                recovery tools, data recovery software, and law enforcement techniques.</p>
+                        </div>
+                    </div>
+
+                    <!-- Main Shred Interface -->
+                    <div class="shred-interface">
+                        <!-- Drag & Drop Zone -->
+                        <div class="drop-zone" id="shred-drop-zone">
+                            <div class="drop-zone-content">
+                                <div class="shred-icon-large">🔥</div>
+                                <h3>Drop Files to Shred</h3>
+                                <p>or</p>
+                                <button id="btn-shred-file" class="btn-shred-primary">
+                                    <span class="btn-icon">🗑️</span>
+                                    <span class="btn-text">Select File to Destroy</span>
+                                </button>
+                                <p class="drop-hint">Supports: Documents, Images, Videos, Archives, Executables</p>
+                            </div>
+                        </div>
+
+                        <!-- Selected File Info -->
+                        <div id="shred-file-info" class="shred-file-info hidden">
+                            <div class="file-info-header">
+                                <span class="file-icon">📄</span>
+                                <div class="file-details">
+                                    <div class="file-name" id="shred-filename">filename.txt</div>
+                                    <div class="file-meta">
+                                        <span id="shred-filesize">0 KB</span> •
+                                        <span id="shred-filepath">C:\path\to\file</span>
+                                    </div>
+                                </div>
+                                <button id="btn-remove-file" class="btn-remove" title="Remove file">✕</button>
+                            </div>
+                        </div>
+
+                        <!-- Shred Options -->
+                        <div class="shred-options" id="shred-options">
+                            <h4>Destruction Method</h4>
+                            <div class="method-selector">
+                                <label class="method-option active">
+                                    <input type="radio" name="shred-method" value="dod5220" checked>
+                                    <div class="method-card">
+                                        <div class="method-icon">🔐</div>
+                                        <div class="method-info">
+                                            <div class="method-name">DoD 5220.22-M</div>
+                                            <div class="method-desc">3-pass overwrite (Recommended)</div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="shred-method" value="gutmann">
+                                    <div class="method-card">
+                                        <div class="method-icon">🛡️</div>
+                                        <div class="method-info">
+                                            <div class="method-name">Gutmann</div>
+                                            <div class="method-desc">35-pass maximum security</div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="shred-method" value="random">
+                                    <div class="method-card">
+                                        <div class="method-icon">⚡</div>
+                                        <div class="method-info">
+                                            <div class="method-name">Random Overwrite</div>
+                                            <div class="method-desc">7-pass random data</div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="shred-checkboxes">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="shred-confirm-check" checked>
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">I understand this action cannot be undone</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="shred-wipe-name">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">Also wipe filename from directory</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Execute Shred Button -->
+                        <button id="btn-execute-shred" class="btn-shred-execute hidden">
+                            <span class="execute-icon">💀</span>
+                            <span class="execute-text">PERMANENTLY DESTROY FILE</span>
+                            <span class="execute-subtext">This is your last warning</span>
+                        </button>
+                    </div>
+
+                    <!-- Shred Progress Modal -->
+                    <div id="shred-progress-modal" class="shred-progress-modal hidden">
+                        <div class="progress-container">
+                            <div class="progress-header">
+                                <div class="shred-animation">
+                                    <div class="shredder-blade"></div>
+                                    <div class="file-being-shredded"></div>
+                                </div>
+                                <h3>Destroying File...</h3>
+                            </div>
+
+                            <div class="progress-steps">
+                                <div class="progress-step active" id="step-1">
+                                    <div class="step-icon">📂</div>
+                                    <div class="step-label">Overwriting Data</div>
+                                    <div class="step-bar">
+                                        <div class="step-progress"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-step" id="step-2">
+                                    <div class="step-icon">🔀</div>
+                                    <div class="step-label">Randomizing Sectors</div>
+                                    <div class="step-bar">
+                                        <div class="step-progress"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-step" id="step-3">
+                                    <div class="step-icon">🗑️</div>
+                                    <div class="step-label">Removing References</div>
+                                    <div class="step-bar">
+                                        <div class="step-progress"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-step" id="step-4">
+                                    <div class="step-icon">✅</div>
+                                    <div class="step-label">Verification</div>
+                                    <div class="step-bar">
+                                        <div class="step-progress"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="progress-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Pass:</span>
+                                    <span class="detail-value" id="shred-pass">1/3</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Progress:</span>
+                                    <span class="detail-value" id="shred-percent">0%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Time Remaining:</span>
+                                    <span class="detail-value" id="shred-time">--:--</span>
+                                </div>
+                            </div>
+
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-shred" id="shred-progress-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success Modal -->
+                    <div id="shred-success-modal" class="shred-success-modal hidden">
+                        <div class="success-container">
+                            <div class="success-icon">💥</div>
+                            <h3>File Permanently Destroyed</h3>
+                            <p id="shred-success-message">The file has been securely shredded and cannot be recovered.
+                            </p>
+                            <button id="btn-shred-another" class="btn-secondary">Shred Another File</button>
+                        </div>
+                    </div>
+
+                    <!-- Info Panel -->
+                    <div class="shred-info-panel">
+                        <h4>🔒 How Secure Shredding Works</h4>
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <div class="info-icon">1️⃣</div>
+                                <div class="info-text">
+                                    <strong>Overwrite</strong>
+                                    <span>File content replaced with random data multiple times</span>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-icon">2️⃣</div>
+                                <div class="info-text">
+                                    <strong>Zero Fill</strong>
+                                    <span>All sectors written with zeros to eliminate traces</span>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-icon">3️⃣</div>
+                                <div class="info-text">
+                                    <strong>Delete</strong>
+                                    <span>File reference removed from filesystem tables</span>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-icon">4️⃣</div>
+                                <div class="info-text">
+                                    <strong>Verify</strong>
+                                    <span>Confirmation that data is unrecoverable</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="security-note">
+                            <strong>🛡️ Military-Grade Security:</strong>
+                            Our shredding algorithms meet DoD 5220.22-M standards, making data recovery impossible even
+                            with advanced forensic tools.
+                        </div>
+                    </div>
+                </section>
+                <!-- Steganography Section -->
+                <section id="steganography-section" class="content-section">
+                    <div class="section-header">
+                        <h2>🖼️ Pixel Veil</h2>
+                        <p class="section-subtitle">Hide any file inside an image using advanced steganography</p>
+                    </div>
+
+                    <!-- Operation Tabs -->
+                    <div class="steg-tabs">
+                        <button class="steg-tab active" data-tab="hide">🔒 Hide Data</button>
+                        <button class="steg-tab" data-tab="extract">🔓 Extract Data</button>
+                        <button class="steg-tab" data-tab="scan">🔍 Scan Image</button>
+                        <button class="steg-tab" data-tab="sanitize">🧼 Sanitize</button>
+                    </div>
+
+                    <!-- Hide Data Panel -->
+                    <div id="steg-hide-panel" class="steg-panel active">
+                        <div class="steg-form">
+                            <div class="form-row">
+                                <label>📄 Data File to Hide</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="hide-data-file" placeholder="No file selected" readonly>
+                                    <button id="btn-select-data-file" class="btn-sm">Browse</button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label>🖼️ Carrier Image</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="hide-carrier-image" placeholder="No image selected" readonly>
+                                    <button id="btn-select-carrier" class="btn-sm">Browse</button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label>🔐 Password (Optional)</label>
+                                <input type="password" id="hide-password" placeholder="Leave empty for no password">
+                            </div>
+
+                            <div class="form-row">
+                                <label>💾 Save As</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="hide-output-path" placeholder="Auto-generated if empty"
+                                        readonly>
+                                    <button id="btn-select-output" class="btn-sm">Choose...</button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label>📊 Capacity Check</label>
+                                <div id="capacity-display" class="capacity-bar">
+                                    <span class="capacity-text">Select files to check capacity</span>
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-hide" class="btn-primary btn-large">
+                                <span>✨ Encode & Hide</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Extract Data Panel -->
+                    <div id="steg-extract-panel" class="steg-panel">
+                        <div class="steg-form">
+                            <div class="form-row">
+                                <label>🖼️ Image with Hidden Data</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="extract-image" placeholder="No image selected" readonly>
+                                    <button id="btn-select-extract-image" class="btn-sm">Browse</button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label>🔐 Password (if set during hide)</label>
+                                <input type="password" id="extract-password" placeholder="Enter password if protected">
+                            </div>
+
+                            <div class="form-row">
+                                <label>💾 Extract To</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="extract-output-path" placeholder="Choose save location"
+                                        readonly>
+                                    <button id="btn-select-extract-output" class="btn-sm">Choose...</button>
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-extract" class="btn-primary btn-large">
+                                <span>🔓 Decode & Extract</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scan Panel -->
+                    <div id="steg-scan-panel" class="steg-panel">
+                        <div class="steg-form">
+                            <div class="form-row">
+                                <label>🖼️ Image to Scan</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="scan-image" placeholder="No image selected" readonly>
+                                    <button id="btn-select-scan-image" class="btn-sm">Browse</button>
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-scan" class="btn-primary btn-large">
+                                <span>🔍 Analyze Image</span>
+                            </button>
+
+                            <div id="scan-result" class="scan-result hidden">
+                                <div class="scan-result-header">
+                                    <span class="scan-icon">📋</span>
+                                    <span class="scan-title">Analysis Result</span>
+                                </div>
+                                <div id="scan-result-content" class="scan-result-content"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sanitize Panel -->
+                    <div id="steg-sanitize-panel" class="steg-panel">
+                        <div class="steg-form">
+                            <div class="form-row">
+                                <label>🖼️ Image to Sanitize</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="sanitize-image" placeholder="No image selected" readonly>
+                                    <button id="btn-select-sanitize-image" class="btn-sm">Browse</button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label>💾 Save As</label>
+                                <div class="file-input-group">
+                                    <input type="text" id="sanitize-output-path" placeholder="Auto-generated if empty"
+                                        readonly>
+                                    <button id="btn-select-sanitize-output" class="btn-sm">Choose...</button>
+                                </div>
+                            </div>
+
+                            <button id="btn-execute-sanitize" class="btn-primary btn-large">
+                                <span>🧼 Strip Hidden Data</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading Animation Overlay -->
+                    <div id="steg-loading" class="steg-loading hidden">
+                        <div class="loading-container">
+                            <div class="loading-title">Encoding Data...</div>
+                            <div class="pixel-grid" id="pixel-grid"></div>
+                            <div class="loading-progress">
+                                <div class="progress-bar" id="progress-bar"></div>
+                            </div>
+                            <div class="loading-status" id="loading-status">Initializing...</div>
+                        </div>
+                    </div>
+
+                    <!-- Info Panel -->
+                    <div class="steg-info">
+                        <h4>🔐 How Pixel Veil Works</h4>
+                        <ul>
+                            <li><strong>Compression:</strong> Files are ZIP-compressed before hiding (40-60% size
+                                reduction)</li>
+                            <li><strong>Encryption:</strong> AES-256-GCM encryption if password is set</li>
+                            <li><strong>Steganography:</strong> Data hidden in LSB of RGB pixels using adaptive
+                                algorithm</li>
+                            <li><strong>Undetectable:</strong> Output image is visually identical; PSNR &gt; 40dB</li>
+                            <li><strong>OBSIDYN Signature:</strong> Only our system can detect and extract hidden data
+                            </li>
+                        </ul>
+
+                        <h4 style="margin-top: 20px;">📏 Capacity Guide</h4>
+                        <div class="capacity-grid">
+                            <div class="capacity-item">
+                                <span class="capacity-size">640×480</span>
+                                <span class="capacity-value">~900 KB</span>
+                            </div>
+                            <div class="capacity-item">
+                                <span class="capacity-size">1920×1080</span>
+                                <span class="capacity-value">~5.5 MB</span>
+                            </div>
+                            <div class="capacity-item">
+                                <span class="capacity-size">3840×2160 (4K)</span>
+                                <span class="capacity-value">~22 MB</span>
+                            </div>
+                            <div class="capacity-item">
+                                <span class="capacity-size">8MP Photo</span>
+                                <span class="capacity-value">~16 MB</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PVS-pass Section -->
+                <section id="recovery-section" class="content-section">
+                    <div class="section-header">
+                        <h2>🛡️ PVS-pass Core</h2>
+                        <p class="section-subtitle">Steganographic key recovery & verification system</p>
+                    </div>
+
+                    <div class="vault-info-banner" style="border-color: rgba(95, 231, 203, 0.4);">
+                        <div class="vault-anim-container">
+                            <div class="vault-anim-ring"
+                                style="border-color: rgba(95, 231, 203, 0.5); animation-duration: 4s;"></div>
+                            <div class="vault-anim-core" style="font-size: 28px;">👁️</div>
+                        </div>
+                        <div class="vault-info-content">
+                            <h3 style="color: #5fe7cb;">How It Works</h3>
+                            <p>The Master Lock can be bypassed by uploading an authorized <strong>Carrier
+                                    Image</strong>. <br>
+                                This image must contain a steganographically embedded payload (created via Pixel Veil)
+                                containing your PVS-pass verification text. When uploaded, the payload is extracted and
+                                verified instantly.</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-grid ops-grid">
+                        <div class="settings-card">
+                            <h3>Master Lock Override</h3>
+                            <div class="setting-toggle-list">
+                                <label class="setting-toggle">
+                                    <div>
+                                        <strong>Enable PVS-pass</strong>
+                                        <span>Allow Master Key reset via Carrier Image</span>
+                                    </div>
+                                    <input type="checkbox" id="recovery-enable-toggle" checked>
+                                </label>
+                                <label class="setting-toggle">
+                                    <div>
+                                        <strong>Require Multi-Factor Authentication</strong>
+                                        <span>Require BOTH Master Key AND Carrier Image</span>
+                                    </div>
+                                    <input type="checkbox" id="recovery-mfa-toggle">
+                                </label>
+                            </div>
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label>Set PVS-pass Verification Password</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="password" id="pvs-pass-input"
+                                        placeholder="Enter text to embed in Carrier Image">
+                                    <button id="btn-save-pvs-pass" class="btn-primary"
+                                        style="padding: 0 15px;">Save</button>
+                                </div>
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                                    <p style="font-size: 11px; color: var(--text-secondary); margin: 0;">This text must
+                                        perfectly match the text hidden inside the Pixel Veil carrier image.</p>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <button id="btn-view-pvs-pass" class="btn-secondary"
+                                            style="font-size: 11px; padding: 2px 8px; display: none;">View</button>
+                                        <span id="pvs-pass-status-badge"
+                                            style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255, 100, 100, 0.2); color: #ff6464;">Status:
+                                            Not Configured</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Authenticate Recovery Image</h3>
+                            <div class="form-row" style="margin-top: 15px;">
+                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">Select
+                                    the verified Carrier Image built in Pixel Veil to unlock the system.</p>
+                                <div class="file-input-group">
+                                    <input type="text" id="recovery-carrier-image"
+                                        placeholder="No carrier image selected" readonly>
+                                    <button id="btn-select-recovery-carrier" class="btn-sm">Browse Image</button>
+                                </div>
+                            </div>
+                            <button id="btn-execute-recovery" class="btn-vault-seal"
+                                style="margin-top: 20px; font-size: 14px; padding: 15px;">
+                                <span>[⚡]</span> Execute Visual Extraction
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PC Manager Section -->
+                <!-- PC Manager Section -->
+                <section id="pc-manager-section" class="content-section">
+                    <div class="section-header">
+                        <h2>PC Manager & Security Matrix</h2>
+                        <p class="section-subtitle">Ultimate Windows control console. Execute advanced system commands,
+                            run deep security diagnostics, and access hidden OS utilities.</p>
+                    </div>
+
+                    <div class="pc-search-container" style="margin-bottom: 20px;">
+                        <div class="search-input-wrapper"
+                            style="position: relative; display: flex; align-items: center;">
+                            <span class="search-icon"
+                                style="position: absolute; left: 14px; color: var(--premium-text-muted); display: flex;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input type="text" id="pc-command-search" class="pc-search-input"
+                                placeholder="Search for commands, tools, or categories (e.g. 'Network', 'DNS', 'Scan', 'Clean')..."
+                                style="width: 100%; padding-left: 42px !important;">
+                        </div>
+                    </div>
+
+                    <div id="pc-commands-grid" class="settings-grid resizable-grid">
+                        <!-- Commands dynamically injected here by renderer.js -->
+                    </div>
+                </section>
+
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Settings & Interface Customization</h2>
+                        <p class="section-subtitle">Comprehensive control over runtime behavior, layout profiles, and
+                            visual posture.</p>
+                    </div>
+
+                    <div class="settings-grid">
+
+                        <!-- Left Column: Core Settings -->
+                        <div class="settings-column">
+                            <div class="settings-card">
+                                <h3>Session Runtime</h3>
+                                <div class="setting-control">
+                                    <label for="autolock-minutes">Minutes of inactivity</label>
+                                    <input type="number" id="autolock-minutes" value="10" min="1" max="60">
+                                </div>
+                                <div class="setting-control">
+                                    <label for="settings-profile">Default profile</label>
+                                    <div class="profile-selection-buttons">
+                                        <input type="hidden" id="settings-profile" value="PERSONAL">
+                                        <button type="button" class="profile-btn active" data-value="PERSONAL">
+                                            <span class="profile-icon">👤</span>
+                                            <span class="profile-text">Personal</span>
+                                        </button>
+                                        <button type="button" class="profile-btn" data-value="WORK">
+                                            <span class="profile-icon">💼</span>
+                                            <span class="profile-text">Work</span>
+                                        </button>
+                                        <button type="button" class="profile-btn" data-value="PUBLIC">
+                                            <span class="profile-icon">👁️</span>
+                                            <span class="profile-text">Public</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="settings-status" class="status-message info">Runtime settings loaded and
+                                    synchronized.</div>
+                            </div>
+
+                            <div class="settings-card">
+                                <h3>Visual Recovery Access</h3>
+                                <div class="setting-toggle-list">
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Allow visual recovery on login</strong>
+                                            <span>Show face + gesture recovery on the login screen when an enrollment
+                                                exists.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-visual-recovery-enabled">
+                                    </label>
+                                </div>
+                                <div id="settings-recovery-status" class="status-message info">Recovery enrollment state
+                                    will appear here.</div>
+                                <div class="toolbar settings-toolbar">
+                                    <button id="btn-settings-open-recovery" class="btn-secondary">Open Operator
+                                        Recovery</button>
+                                </div>
+                            </div>
+
+                            <div class="settings-card">
+                                <h3>Layout Profiles</h3>
+                                <div class="setting-control">
+                                    <label for="layout-preset-select">Saved Layouts</label>
+                                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                        <select id="layout-preset-select" style="flex: 1;">
+                                            <option value="">Default Layout</option>
+                                        </select>
+                                        <button id="btn-load-layout" class="btn-secondary">Load</button>
+                                    </div>
+                                </div>
+                                <div class="setting-control" style="margin-top: 15px;">
+                                    <label for="layout-preset-name">Save Current Layout As...</label>
+                                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                        <input type="text" id="layout-preset-name"
+                                            placeholder="E.g., Dual Monitor Setup" style="flex: 1;">
+                                        <button id="btn-save-layout" class="btn-primary">Save</button>
+                                    </div>
+                                </div>
+                                <div class="toolbar settings-toolbar" style="margin-top: 20px;">
+                                    <button id="btn-reset-layout" class="btn-danger" style="width: 100%;">Reset to
+                                        Default Layout</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Privacy & UI Customization -->
+                        <div class="settings-column">
+                            <div class="settings-card">
+                                <h3>Privacy Surface</h3>
+                                <div class="setting-toggle-list">
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Privacy mode</strong>
+                                            <span>Prefer quieter runtime behavior and lower visible trace.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-privacy-mode">
+                                    </label>
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Store full paths</strong>
+                                            <span>Keep original source paths in metadata instead of masking them.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-store-full-paths">
+                                    </label>
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Decoy email alerting</strong>
+                                            <span>Send a silent email alert when a decoy vault is accessed.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-decoy-email">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="settings-card">
+                                <h3>Interface Aesthetics</h3>
+                                <div class="setting-toggle-list">
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Login binary field</strong>
+                                            <span>Show the animated binary atmosphere on the login screen.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-login-binary">
+                                    </label>
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Reduced motion</strong>
+                                            <span>Trim interface animation and motion intensity for a quieter
+                                                surface.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-reduced-motion">
+                                    </label>
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Compact Interface Mode</strong>
+                                            <span>Condense padding and margins to maximize data density on
+                                                screen.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-ui-compact">
+                                    </label>
+                                    <label class="setting-toggle">
+                                        <div>
+                                            <strong>Hide Sidebar Labels</strong>
+                                            <span>Collapse the sidebar to show icons only, expanding the
+                                                workspace.</span>
+                                        </div>
+                                        <input type="checkbox" id="settings-ui-icons-only">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- PC Manager Confirmation Modal -->
+    <div id="pc-confirm-modal" class="pc-confirm-modal hidden">
+        <div class="pc-modal-content">
+            <div class="pc-modal-header">
+                <span class="pc-modal-icon">⚠️</span>
+                <h3>System Execution Confirmation</h3>
+            </div>
+            <div class="pc-modal-body">
+                <p id="pc-modal-desc">You are about to execute an administrative system command. Please review the
+                    details below.</p>
+                <div class="pc-modal-cmd-box">
+                    <code id="pc-modal-cmd"></code>
+                </div>
+                <div class="pc-modal-details">
+                    <p><strong>Action:</strong> <span id="pc-modal-action"></span></p>
+                    <p><strong>Impact:</strong> <span id="pc-modal-impact"></span></p>
+                    <p><strong>Est. Time:</strong> <span id="pc-modal-time"></span></p>
+                </div>
+            </div>
+            <div class="pc-modal-footer">
+                <button id="pc-modal-cancel" class="btn-secondary">Cancel</button>
+                <button id="pc-modal-confirm" class="btn-primary pc-run-btn">Execute Protocol</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="layout.js"></script>
+    <script src="renderer.js"></script>
+</body>
+
+</html>

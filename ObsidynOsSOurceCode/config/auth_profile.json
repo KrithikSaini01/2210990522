@@ -1,0 +1,215 @@
+{
+  "master_hash": "495e9c9343556976ce2e20d438a868c0e3054ce4fda08ccb347079cd481949df",
+  "created_at": "2026-04-17T10:40:10",
+  "updated_at": "2026-04-24T14:42:03",
+  "lock_name": "Rhythm Lock",
+  "keystroke_profile": {
+    "samples": [
+      {
+        "dwell_mean": 107.125,
+        "dwell_std": 36.675732780682104,
+        "flight_mean": 169.0,
+        "flight_std": 40.46162202807565,
+        "total_duration": 3693.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T09:11:08"
+      },
+      {
+        "dwell_mean": 97.0,
+        "dwell_std": 35.60547710675986,
+        "flight_mean": 205.57142857142858,
+        "flight_std": 59.42307666905448,
+        "total_duration": 3948.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T09:18:53"
+      },
+      {
+        "dwell_mean": 97.625,
+        "dwell_std": 33.49976679023303,
+        "flight_mean": 184.71428571428572,
+        "flight_std": 44.67250444133645,
+        "total_duration": 3801.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T09:23:50"
+      },
+      {
+        "dwell_mean": 116.125,
+        "dwell_std": 47.001163549427154,
+        "flight_mean": 232.42857142857142,
+        "flight_std": 65.30556122207827,
+        "total_duration": 4133.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T09:44:03"
+      },
+      {
+        "dwell_mean": 98.75,
+        "dwell_std": 32.22479635311913,
+        "flight_mean": 273.42857142857144,
+        "flight_std": 171.99074488626013,
+        "total_duration": 4419.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T09:47:28"
+      },
+      {
+        "dwell_mean": 106.0,
+        "dwell_std": 18.069310999592652,
+        "flight_mean": 181.0,
+        "flight_std": 57.151427928667836,
+        "total_duration": 3775.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:26:21"
+      },
+      {
+        "dwell_mean": 104.125,
+        "dwell_std": 26.184143579655228,
+        "flight_mean": 217.71428571428572,
+        "flight_std": 152.0100694838661,
+        "total_duration": 4029.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:34:12"
+      },
+      {
+        "dwell_mean": 104.875,
+        "dwell_std": 37.0656090601517,
+        "flight_mean": 366.0,
+        "flight_std": 316.6583332236813,
+        "total_duration": 4442.0,
+        "key_count": 9,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:44:56"
+      },
+      {
+        "dwell_mean": 102.88888888888889,
+        "dwell_std": 32.59326598630952,
+        "flight_mean": 225.875,
+        "flight_std": 77.02343393409566,
+        "total_duration": 4315.0,
+        "key_count": 9,
+        "correction_ratio": 0.1111111111111111,
+        "captured_at": "2026-04-24T11:47:46"
+      },
+      {
+        "dwell_mean": 104.125,
+        "dwell_std": 41.645640528151326,
+        "flight_mean": 226.28571428571428,
+        "flight_std": 158.54851829349028,
+        "total_duration": 4093.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:51:22"
+      },
+      {
+        "dwell_mean": 104.625,
+        "dwell_std": 36.78973192345929,
+        "flight_mean": 171.28571428571428,
+        "flight_std": 64.31110609643515,
+        "total_duration": 3708.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:54:41"
+      },
+      {
+        "dwell_mean": 106.75,
+        "dwell_std": 35.32615886280307,
+        "flight_mean": 236.14285714285714,
+        "flight_std": 90.69167322216927,
+        "total_duration": 4162.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:57:09"
+      },
+      {
+        "dwell_mean": 114.0,
+        "dwell_std": 37.286056375004314,
+        "flight_mean": 304.14285714285717,
+        "flight_std": 207.1855128494603,
+        "total_duration": 4636.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T11:59:47"
+      },
+      {
+        "dwell_mean": 106.125,
+        "dwell_std": 34.660631485880344,
+        "flight_mean": 175.85714285714286,
+        "flight_std": 91.79391291899258,
+        "total_duration": 3737.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T12:05:31"
+      },
+      {
+        "dwell_mean": 92.125,
+        "dwell_std": 26.193689602650483,
+        "flight_mean": 205.42857142857142,
+        "flight_std": 68.06059724950394,
+        "total_duration": 3947.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T12:10:44"
+      },
+      {
+        "dwell_mean": 120.5,
+        "dwell_std": 40.162171256046406,
+        "flight_mean": 322.0,
+        "flight_std": 248.90560459740556,
+        "total_duration": 4762.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T14:08:44"
+      },
+      {
+        "dwell_mean": 100.875,
+        "dwell_std": 36.316103521716094,
+        "flight_mean": 453.2857142857143,
+        "flight_std": 292.84940756334834,
+        "total_duration": 5679.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T14:20:52"
+      },
+      {
+        "dwell_mean": 84.0,
+        "dwell_std": 21.880356487041066,
+        "flight_mean": 396.7142857142857,
+        "flight_std": 222.58270648118597,
+        "total_duration": 5282.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T14:21:17"
+      },
+      {
+        "dwell_mean": 116.25,
+        "dwell_std": 27.657503502666323,
+        "flight_mean": 181.0,
+        "flight_std": 56.33572832327888,
+        "total_duration": 3778.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T14:41:13"
+      },
+      {
+        "dwell_mean": 118.5,
+        "dwell_std": 29.261749776799064,
+        "flight_mean": 143.0,
+        "flight_std": 40.59556626036888,
+        "total_duration": 3510.0,
+        "key_count": 8,
+        "correction_ratio": 0.0,
+        "captured_at": "2026-04-24T14:42:03"
+      }
+    ],
+    "sample_count": 20,
+    "last_score": 2.122,
+    "last_result": "VERIFIED",
+    "threshold": 3.4,
+    "minimum_training_samples": 5
+  }
+}

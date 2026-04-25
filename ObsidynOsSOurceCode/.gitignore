@@ -1,0 +1,53 @@
+# ==============================
+# Node.js & Electron Dependencies
+# ==============================
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.local
+
+# ==============================
+# Python & Virtual Environments
+# ==============================
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ==============================
+# Build Outputs (Electron & PyInstaller)
+# ==============================
+dist/
+build/
+ui/dist/
+ui/dist-app/
+ui/build/
+ui/out/
+*.exe
+*.dll
+*.manifest
+*.spec
+
+# ==============================
+# Operating System & IDE Files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.tmp
+*.bak
+
+# ==============================
+# Local Data & Releases
+# ==============================
+obsidyn-release-repo/
+obsidynrelease/
+artifacts/
+.gemini/

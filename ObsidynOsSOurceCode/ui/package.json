@@ -1,0 +1,58 @@
+{
+  "name": "obsidyn-see-ui",
+  "version": "2.0.2",
+  "description": "OBSIDYN Secure Execution Environment",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --dir",
+    "build:installer": "electron-builder --win --config.target=nsis"
+  },
+  "author": "OBSIDYN Systems",
+  "license": "UNLICENSED",
+  "build": {
+    "appId": "com.obsidyn.see",
+    "productName": "OBSIDYN",
+    "directories": {
+      "output": "../dist-app"
+    },
+    "files": [
+      "src/**/*",
+      "!src/**/*.map",
+      "node_modules/**/*",
+      "!node_modules/.cache/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist/obsidyn-engine.exe",
+        "to": "obsidyn-engine.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "obsidyn-production-v2.0.2.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": true,
+      "shortcutName": "OBSIDYN",
+      "include": "build/installer.nsh"
+    },
+    "compression": "maximum"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "electron-packager": "^17.1.2"
+  }
+}

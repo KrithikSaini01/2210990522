@@ -1,0 +1,23 @@
+{
+  "privacy_mode": false,
+  "store_full_paths": false,
+  "log_level": "ERROR",
+  "auto_lock_minutes": 11,
+  "default_security_profile": "PUBLIC",
+  "visual_recovery_enabled": true,
+  "login_binary_enabled": true,
+  "reduced_motion": false,
+  "decoy_email_enabled": false,
+  "decoy_email_live": true,
+  "decoy_email_recipient": "himeshsainichd@gmail.com",
+  "decoy_email_sender": "himeshsainichd@gmail.com",
+  "decoy_email_app_password": "okfe bnni vldo cwcm",
+  "decoy_email_smtp_host": "smtp.gmail.com",
+  "decoy_email_smtp_port": 587,
+  "decoy_email_use_tls": true,
+  "visual_recovery_min_failed_attempts": 3,
+  "pvs_pass_hash": "7d1a54127b222502f5b79b5fb0803061152a44f92b37e23c6527baf665d4da9a",
+  "updated_at": "2026-04-24T17:31:28.559004",
+  "pvs_mfa_required": false,
+  "pvs_pass_text": "abcdefg"
+}
